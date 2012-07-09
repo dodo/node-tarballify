@@ -42,6 +42,7 @@ class Wrap extends EventEmitter
                 gname:'nogroup'
                 uid: 1000
                 gid: 1000
+                mode: 0o0666
         @tarball.on('error', @emit.bind(this, 'error'))
         @tarball.setMaxListeners(0)
 
@@ -94,7 +95,7 @@ class Wrap extends EventEmitter
             src.push("# go back where we came from")
             src.push("cd $cwd")
             src.push("echo 'done.'")
-            entry = @append("install", src.join("\n"))
+            entry = @append("install", src.join("\n"), mode:0o0777)
             entry.name = "main"
         if @working
             @ending = yes
@@ -140,6 +141,7 @@ class Wrap extends EventEmitter
                 opts.size = new Buffer(content).length
             @emit('error', "no size for #{file}") unless opts.size?
         stream.props = size:opts.size
+        stream.props.mode = opts.mode if opts.mode?
         @_push (done) ->
             return done() if @skip[entry.name]
             @emit('append', stream, entry)
