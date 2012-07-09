@@ -120,7 +120,7 @@ class Wrap extends EventEmitter
         return this
 
     readFile: (file) ->
-        body = fs.readFileSync(file, 'utf-8').replace(/^#![^\n]*\n/, "")
+        body = fs.readFileSync(file, 'utf-8')
         for fn in @filters
             body = fn.call(this, body, file)
         return body
