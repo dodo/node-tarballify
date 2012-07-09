@@ -113,7 +113,7 @@ class Wrap extends EventEmitter
             @extensions.push(ext)
             @filters.push (body, file) =>
                 if file.slice(-ext.length) is ext
-                    f.call(this, body, file)
+                    fn.call(this, body, file)
                 else body
         else
             @filters.push(ext)
