@@ -163,7 +163,6 @@ class Wrap extends EventEmitter
             new Error "#{msg}: #{JSON.stringify mfile} " +
                 "from directory #{JSON.stringify opts.dirname}" +
                 (opts.fromFile? and " while processing file #{opts.fromFile}" or "")
-        pkg = {}
         opts.file = mfile if opts.body
         unless opts.file
             try
@@ -183,12 +182,7 @@ class Wrap extends EventEmitter
             catch err # nothing
         if pkgfile and not @files[pkgfile]
             if path.existsSync(pkgfile)
-                pkgbody = fs.readFileSync(pkgfile, 'utf-8')
-                try
-                    npmpkg = JOSN.parse(pkgbody)
-                    pkg.main = npmpkg.main if npmpkg.main?
-                catch err #  ignore broken package.jsons just like node
-                pkgbody = "module.exports=#{pkgbody}"
+                pkgbody = "module.exports=" + fs.readFileSync(pkgfile, 'utf-8')
                 @append(pkgfile, pkgbody, {dirname})
             else pkgfile = null
 
