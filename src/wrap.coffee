@@ -155,10 +155,10 @@ class Wrap extends EventEmitter
         resolve.sync(file, {basedir, @extensions})
 
     require: (mfile, opts = {}) ->
-        opts.dirname ?= process.cwd()
-        return this if @has(mfile) or
-            resolve.isCore(mfile)  or
-            (opts.target? and @has(opts.target))
+        opts.dirname ?= @dirname
+        return this unless not @has(mfile) and
+            not resolve.isCore(mfile)      and
+            not (opts.target? and @has(opts.target))
         moduleError = (msg) ->
             new Error "#{msg}: #{JSON.stringify mfile} " +
                 "from directory #{JSON.stringify opts.dirname}" +
