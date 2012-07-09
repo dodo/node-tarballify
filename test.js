@@ -7,6 +7,10 @@ console.log("creating new tarball …")
 var tarball = tarballify('./lib/tarballify.js', {
     dirname:__dirname,
 })
+    .register(".node", function (body, file) {
+        console.log("BINARY FILE WARNING:", file)
+        return body
+    })
     .on('error', console.error.bind(console))
     .on('wait', function(){console.log("waiting for tarball to finish …")})
 //     .on('append', function(f){console.log("append",f.props.size, "\t",f.path)})
