@@ -1,0 +1,23 @@
+{ "name": "tarballify"
+, "description": "wrap up server code in a tarball"
+, "version": "0.0.1"
+, "homepage": "https://github.com/dodo/node-tarballify"
+, "author": "dodo (https://github.com/dodo)"
+, "repository": {"type": "git", "url": "git://github.com/dodo/node-tarballify.git"}
+, "main": "lib/tarballify.js"
+, "engines": {"node": ">= 0.4.x"}
+, "keywords": []
+, "scripts": {
+    "prepublish": "cake build"}
+, "dependencies": {
+    "tarball": ">= 0.0.3",
+    "bufferstream": ">= 0.5.1",
+    "nub": ">= 0.0.0",
+    "commondir": ">= 0.0.1",
+    "resolve": ">= 0.2.2",
+    "deputy": ">= 0.0.2",
+    "detective": ">= 0.1.1"}
+, "devDependencies": {
+    "muffin": ">= 0.6.0",
+    "coffee-script": ">= 1.1.3"}
+}

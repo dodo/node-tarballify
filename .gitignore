@@ -1,0 +1,8 @@
+*~
+*.swp
+lib/*
+test/*
+test.tar.gz
+*.browser.*
+.lock-wscript
+node_modules/
