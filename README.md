@@ -1,4 +1,4 @@
-![TARBALLIFY ALL THE THINGS!](./raw/master/23182620.jpg)
+![TARBALLIFY ALL THE THINGS!](/dodo/node-tarballify/raw/master/23182620.jpg)
 
 Put all the things from your server in one tarball.
 
