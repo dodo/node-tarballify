@@ -96,7 +96,13 @@ class Wrap extends EventEmitter
         file = path.resolve(dirname, file)
         stream = new BufferStream disabled:yes # no splitting needed
         stream.path = entry.file
-        stream.props = size:opts.size ? fs.statSync(file).size
+        unless opts.size?
+            if path.existsSync(file)
+                opts.size = fs.statSync(file).size
+            else if typeof content is 'string'
+                opts.size = new Buffer(content).length
+            @emit('error', "no size for #{file}") unless opts.size?
+        stream.props = size:opts.size
         @_push (done) ->
             @emit('append', stream)
             @tarball.append(stream, done)
