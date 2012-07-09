@@ -39,6 +39,7 @@ class Wrap extends EventEmitter
         @tarball.setMaxListeners(0)
 
         @working = no
+        @dirname = opts.dirname ? process.cwd()
         @exports = opts.exports
         @debug = opts.debug
         @piped = no
@@ -88,12 +89,13 @@ class Wrap extends EventEmitter
         else
             @work(job)
 
-    append: (entry, content, opts = {}) ->
+    append: (file, content, opts = {}, callback) ->
         console.warn("WARN: no output specified.") unless @piped
-        dirname = opts.dirname ? process.cwd()
-        file = path.resolve(dirname, entry)
+        dirname = opts.dirname ? @dirname
+        @files[file] = entry = {file}
+        file = path.resolve(dirname, file)
         stream = new BufferStream disabled:yes # no splitting needed
-        stream.path = file
+        stream.path = entry.file
         stream.props = size:opts.size ? fs.statSync(file).size
         @_push (done) ->
             @emit('append', stream)
@@ -103,7 +105,7 @@ class Wrap extends EventEmitter
                 stream.end(content, opts.encoding ? 'utf-8')
             else
                 content.pipe(stream)
-        return @files[entry] = {file:entry}
+        return entry
 
     register: (ext, fn) ->
         if typeof ext is 'object'
@@ -126,7 +128,7 @@ class Wrap extends EventEmitter
         return body
 
     addEntry: (filename, opts = {}, callback) ->
-        file = path.resolve(opts.dirname ? process.cwd(), filename)
+        file = path.resolve(opts.dirname ? @dirname, filename)
         body = opts.body ? @readFile(file)
 
         try required = @detective.find(body)
@@ -145,7 +147,7 @@ class Wrap extends EventEmitter
 
         dirname = path.dirname(file)
         for req in required.strings
-            params = {dirname, fromFile:file}
+            params = {dirname, fromFile:entry.file}
             if opts.target and /^[.\/]/.test(req)
                 params.target = path.resolve(path.dirname(opts.target), req)
             @require(req, params)
@@ -203,7 +205,7 @@ class Wrap extends EventEmitter
         entry.target = opts.target
 
         for req in nub(required.strings)
-            params = {dirname, fromFile:opts.file}
+            params = {dirname, fromFile:entry.file}
             if opts.target and /^[.\/]/.test(req)
                 # not a real directory on the filesystem; just using the path
                 # module to get rid of the filename.
