@@ -194,7 +194,7 @@ class Wrap extends EventEmitter
                     npmpkg = JOSN.parse(pkgbody)
                     pkg.main = npmpkg.main if npmpkg.main?
                 catch err #  ignore broken package.jsons just like node
-                pkgbody = "module.exports=#{JSON.stringify pkgbody}"
+                pkgbody = "module.exports=#{pkgbody}"
                 @append(pkgfile, pkgbody, {dirname})
             else pkgfile = null
 
