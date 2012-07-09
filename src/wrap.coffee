@@ -104,7 +104,8 @@ class Wrap extends EventEmitter
             @emit('error', "no size for #{file}") unless opts.size?
         stream.props = size:opts.size
         @_push (done) ->
-            @emit('append', stream)
+            return done() if @skip[entry.name]
+            @emit('append', stream, entry)
             @tarball.append(stream, done)
             content or= fs.createReadStream(file)
             if typeof content is 'string'
@@ -150,10 +151,11 @@ class Wrap extends EventEmitter
 
         entry = @append(filename, body, dirname:opts.dirname)
         entry.target = opts.target if opts.target?
+        entry.name = opts.name ? "main"
 
         dirname = path.dirname(file)
         for req in required.strings
-            params = {dirname, fromFile:entry.file}
+            params = {dirname, name:entry.name, fromFile:entry.file}
             if opts.target and /^[.\/]/.test(req)
                 params.target = path.resolve(path.dirname(opts.target), req)
             @require(req, params)
@@ -188,11 +190,21 @@ class Wrap extends EventEmitter
             try pkgfile = resolve.sync path.join(mfile, 'package.json'),
                 basedir:dirname
             catch err # nothing
-        if pkgfile and not @files[pkgfile]
-            if path.existsSync(pkgfile)
-                pkgbody = "module.exports=" + fs.readFileSync(pkgfile, 'utf-8')
-                @append(pkgfile, pkgbody, {dirname})
-            else pkgfile = null
+        if pkgfile
+            if @files[pkgfile]
+                pkgname = @files[pkgfile].name
+            else
+                unless path.existsSync(pkgfile)
+                    pkgfile = null
+                else
+                    pkgbody = fs.readFileSync(pkgfile, 'utf-8')
+                    try
+                        npmpkg = JSON.parse(pkgbody)
+                        pkgname = npmpkg?.name
+                    catch err #  ignore broken package.jsons just like node
+                    pkgbody = "module.exports=#{pkgbody}"
+                    pkgjson = @append(pkgfile, pkgbody, {dirname})
+                    pkgjson.name = pkgname ? opts.name
 
         body = opts.body ? @readFile(opts.file)
 
@@ -209,9 +221,10 @@ class Wrap extends EventEmitter
 
         entry = @append(opts.file, body, {dirname})
         entry.target = opts.target
+        entry.name = pkgname ? opts.name
 
         for req in nub(required.strings)
-            params = {dirname, fromFile:entry.file}
+            params = {dirname, name:entry.name, fromFile:entry.file}
             if opts.target and /^[.\/]/.test(req)
                 # not a real directory on the filesystem; just using the path
                 # module to get rid of the filename.
