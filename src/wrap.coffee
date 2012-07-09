@@ -71,14 +71,28 @@ class Wrap extends EventEmitter
         unless @installscript # veryPrimitive™
             # generate an installscript to get all nodejs bindings with npm
             @installscript = yes
-            src = ["#!/bin/sh", "cwd=`pwd`"]
+            src = [
+                "#!/bin/sh"
+                "cwd=`pwd`"
+                "# find where this file really is by dereferencing the symlink(s)."
+                "this=$0"
+                "cd `dirname $this`"
+                "while [ -n \"`readlink $this`\" ] ; do"
+                "\tthis=`readlink $this`"
+                "\tcd `dirname $this`"
+                "done"
+                "dir=`pwd`"
+            ]
             for pkgname,pkgs of @skip
                 src.push("echo 'install #{pkgname} …'")
                 for pkgpath in pkgs
                     parentpkgpath = path.join(pkgpath, "../..")
                     src.push("cd #{path.relative(@dirname, parentpkgpath)}")
                     src.push("npm install #{pkgname}")
-                    src.push("cd $cwd")
+                    src.push("cd $dir")
+            src.pop()
+            src.push("# go back where we came from")
+            src.push("cd $cwd")
             src.push("echo 'done.'")
             entry = @append("install", src.join("\n"))
             entry.name = "main"
