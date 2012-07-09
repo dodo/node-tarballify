@@ -46,8 +46,6 @@ class Wrap extends EventEmitter
         @queue = []
         @files = []
         @filters = []
-        @preFilters = []
-        @postFilters = []
 
         @extensions = [ '.js' ]
 
@@ -111,10 +109,6 @@ class Wrap extends EventEmitter
         if typeof ext is 'object'
             fn = ext.wrapper
             ext = ext.extension
-        if ext is 'post'
-            @postFilters.push(fn)
-        else if ext is 'pre'
-            @preFilters.push(fn)
         else if fn
             @extensions.push(ext)
             @filters.push (body, file) =>
