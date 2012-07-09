@@ -77,7 +77,7 @@ class Wrap extends EventEmitter
     work: (job) ->
         if job?
             @working = yes
-            job.call(this, => @work(@queue.shift()))
+            process.nextTick(job.bind(this, => @work(@queue.shift())))
         else
             @working = no
             @end() if @ending
