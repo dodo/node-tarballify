@@ -13,6 +13,13 @@ nub = require 'nub'
 module.exports = (opts) -> new Wrap(opts)
 
 idFromPath = (path) -> path.replace(/\\/g, '/')
+pkgbasedir = (dir) ->
+    dn = path.dirname(dir)
+    while path.basename(dn) isnt "node_modules"
+        dir = dn
+        dn = path.dirname(dir)
+    return dir
+
 
 class Wrap extends EventEmitter
     constructor: (opts = {}) ->
@@ -44,6 +51,7 @@ class Wrap extends EventEmitter
         @debug = opts.debug
         @piped = no
 
+        @skip = []
         @queue = []
         @files = []
         @filters = []
@@ -59,6 +67,21 @@ class Wrap extends EventEmitter
         return Object.keys(@files).some((key) => @files[key].target is file)
 
     end: () =>
+        @installscript = yes unless Object.keys(@skip).length
+        unless @installscript # veryPrimitive™
+            # generate an installscript to get all nodejs bindings with npm
+            @installscript = yes
+            src = ["#!/bin/sh", "cwd=`pwd`"]
+            for pkgname,pkgs of @skip
+                src.push("echo 'install #{pkgname} …'")
+                for pkgpath in pkgs
+                    parentpkgpath = path.join(pkgpath, "../..")
+                    src.push("cd #{path.relative(@dirname, parentpkgpath)}")
+                    src.push("npm install #{pkgname}")
+                    src.push("cd $cwd")
+            src.push("echo 'done.'")
+            entry = @append("install", src.join("\n"))
+            entry.name = "main"
         if @working
             @ending = yes
             @emit('wait')
@@ -206,6 +229,13 @@ class Wrap extends EventEmitter
                     pkgjson = @append(pkgfile, pkgbody, {dirname})
                     pkgjson.name = pkgname ? opts.name
 
+        ext = ".node"
+        if opts.file.slice(-ext.length) is ext
+            name = pkgname ? opts.name
+            unless name is "main"
+                dir = pkgbasedir(opts.file)
+            (@skip[name] ?= []).push(dir ? yes)
+            return this
         body = opts.body ? @readFile(opts.file)
 
         try required = @detective.find(body)
@@ -239,7 +269,6 @@ class Wrap extends EventEmitter
 
                 params.target = idFromPath(reqFilenameWithoutDriveLetter)
             @require(req, params)
-
         return this
 
 
