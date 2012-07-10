@@ -19,6 +19,20 @@ pkgbasedir = (dir) ->
         dir = dn
         dn = path.dirname(dir)
     return dir
+eval_ = (expressions, ctx) ->
+    res = []
+    console.error("Expressions in require() statements in #{ctx.__filename}")
+    for ex in expressions
+        # lets try to eval the exp before we completely give up
+        try # veryCrude™
+            ev = eval("with(ctx){#{ex}}", ctx)
+            if typeof ev is 'string'
+                res.push(ev)
+            else
+                console.error("    require(#{ex})  #{JSON.stringify ev}")
+        catch err
+            console.error("    require(#{ex})  #{err?.message or ""}")
+    return res
 
 
 class Wrap extends EventEmitter
@@ -194,9 +208,11 @@ class Wrap extends EventEmitter
             process.nextTick( => @emit('syntaxError', err))
             return this
         if required.expressions.length
-            console.error("Expressions in require() statements:")
-            for ex in required.expressions
-                console.error("    require(#{ex})")
+            exps = eval_ required.expressions,
+                process:process
+                __dirname:dirname
+                __filename:file
+            required.strings = required.strings.concat(exps)
 
 
         dirname = path.dirname(file)
@@ -273,9 +289,11 @@ class Wrap extends EventEmitter
             process.nextTick( => @emit('syntaxError', err))
             return this
         if required.expressions.length
-            console.error("Expressions in require() statements:")
-            for ex in required.expressions
-                console.error("    require(#{ex})")
+            exps = eval_ required.expressions,
+                process:process
+                __dirname:dirname
+                __filename:opts.file
+            required.strings = required.strings.concat(exps)
 
         entry = @append(opts.file, body, {dirname})
         entry.target = opts.target
