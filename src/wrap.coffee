@@ -57,7 +57,7 @@ class Wrap extends EventEmitter
         @files = []
         @filters = []
 
-        @extensions = [ '.js' ]
+        @extensions = [ '.js', '.node' ]
 
     use: (fn) ->
         fn(this, this)
