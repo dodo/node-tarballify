@@ -220,7 +220,7 @@ class Wrap extends EventEmitter
             not resolve.isCore(mfile)      and
             not (opts.target? and @has(opts.target))
         moduleError = (msg) ->
-            new Error "#{msg}: #{JSON.stringify mfile} " +
+            "#{msg}: #{JSON.stringify mfile} " +
                 "from directory #{JSON.stringify opts.dirname}" +
                 (opts.fromFile? and " while processing file #{opts.fromFile}" or "")
         opts.file = mfile if opts.body
@@ -232,7 +232,8 @@ class Wrap extends EventEmitter
                     normPath = mfile
                 opts.file = @resolver(normPath, opts.dirname)
             catch err
-                throw moduleError "Cannot find module. #{err?.message}"
+                msg = moduleError("Cannot find module. #{err?.message}")
+                @emit('error', msg)
         return this if @has(opts.file)
         dirname = path.dirname(opts.file)
         pkgfile = path.join(dirname, 'package.json')
