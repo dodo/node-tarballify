@@ -252,10 +252,10 @@ class Wrap extends EventEmitter
                     pkgbody = "module.exports=#{pkgbody}"
                     pkgjson = @append(pkgfile, pkgbody, {dirname})
                     pkgjson.name = pkgname ? opts.name
+        name = pkgname ? opts.name
 
         ext = ".node"
         if opts.file.slice(-ext.length) is ext
-            name = pkgname ? opts.name
             unless name is "main"
                 dir = pkgbasedir(opts.file)
             (@skip[name] ?= []).push(dir ? @dirname)
@@ -275,10 +275,10 @@ class Wrap extends EventEmitter
 
         entry = @append(opts.file, body, {dirname})
         entry.target = opts.target
-        entry.name = pkgname ? opts.name
+        entry.name = name
 
         for req in nub(required.strings)
-            params = {dirname, name:entry.name, fromFile:entry.file}
+            params = {dirname, name:name, fromFile:entry.file}
             if opts.target and /^[.\/]/.test(req)
                 # not a real directory on the filesystem; just using the path
                 # module to get rid of the filename.
