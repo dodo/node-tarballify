@@ -88,6 +88,7 @@ class Wrap extends EventEmitter
             @installscript = yes
             src = [
                 "#!/bin/sh"
+                "# auto generated file by https://github.com/dodo/node-tarballify"
                 "cwd=`pwd`"
                 "# find where this file really is by dereferencing the symlink(s)."
                 "this=$0"
