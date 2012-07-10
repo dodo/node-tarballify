@@ -84,14 +84,20 @@ class Wrap extends EventEmitter
                 "done"
                 "dir=`pwd`"
             ]
+            islastdir = no
             for pkgname,pkgs of @skip
                 src.push("echo 'install #{pkgname} …'")
                 for pkgpath in pkgs
                     parentpkgpath = path.join(pkgpath, "../..")
+                    unless pkgpath isnt @dirname and parentpkgpath isnt @dirname
+                        src.push("npm install #{pkgname}")
+                        islastdir = no
+                        continue
                     src.push("cd #{path.relative(@dirname, parentpkgpath)}")
                     src.push("npm install #{pkgname}")
                     src.push("cd $dir")
-            src.pop()
+                    islastdir = yes
+            src.pop() if islastdir
             src.push("# go back where we came from")
             src.push("cd $cwd")
             src.push("echo 'done.'")
@@ -252,7 +258,7 @@ class Wrap extends EventEmitter
             name = pkgname ? opts.name
             unless name is "main"
                 dir = pkgbasedir(opts.file)
-            (@skip[name] ?= []).push(dir ? yes)
+            (@skip[name] ?= []).push(dir ? @dirname)
             return this
         body = opts.body ? @readFile(opts.file)
 
