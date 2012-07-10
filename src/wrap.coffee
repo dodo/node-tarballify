@@ -278,6 +278,7 @@ class Wrap extends EventEmitter
         if opts.file.slice(-ext.length) is ext
             unless name is "main"
                 dir = pkgbasedir(opts.file)
+            @emit("skip", {file:opts.file, name, dirname:dir ? dirname})
             (@skip[name] ?= []).push(dir ? @dirname)
             return this
         body = opts.body ? @readFile(opts.file)
