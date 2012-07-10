@@ -183,7 +183,8 @@ class Wrap extends EventEmitter
         return body
 
     addEntry: (filename, opts = {}, callback) ->
-        file = path.resolve(opts.dirname ? @dirname, filename)
+        dirname = opts.dirname ? @dirname
+        file = path.resolve(dirname, filename)
         body = opts.body ? @readFile(file)
 
         try required = @detective.find(body)
@@ -197,13 +198,14 @@ class Wrap extends EventEmitter
             for ex in required.expressions
                 console.error("    require(#{ex})")
 
-        entry = @append(filename, body, dirname:opts.dirname)
-        entry.target = opts.target if opts.target?
-        entry.name = opts.name ? "main"
 
         dirname = path.dirname(file)
+        entry = @append(filename, body, {dirname})
+        entry.target = opts.target if opts.target?
+        entry.name = name = opts.name ? "main"
+
         for req in required.strings
-            params = {dirname, name:entry.name, fromFile:entry.file}
+            params = {dirname, name, fromFile:entry.file}
             if opts.target and /^[.\/]/.test(req)
                 params.target = path.resolve(path.dirname(opts.target), req)
             @require(req, params)
@@ -279,7 +281,7 @@ class Wrap extends EventEmitter
         entry.name = name
 
         for req in nub(required.strings)
-            params = {dirname, name:name, fromFile:entry.file}
+            params = {dirname, name, fromFile:entry.file}
             if opts.target and /^[.\/]/.test(req)
                 # not a real directory on the filesystem; just using the path
                 # module to get rid of the filename.
