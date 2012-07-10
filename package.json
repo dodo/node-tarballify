@@ -14,7 +14,7 @@
     "bufferstream": ">= 0.5.1",
     "nub": ">= 0.0.0",
     "commondir": ">= 0.0.1",
-    "resolve": ">= 0.2.2",
+    "resolve": "git://github.com/dodo/node-resolve.git#master",
     "deputy": ">= 0.0.2",
     "detective": ">= 0.1.1"}
 , "devDependencies": {
