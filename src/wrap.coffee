@@ -83,11 +83,12 @@ class Wrap extends EventEmitter
                 "\tcd `dirname $this`"
                 "done"
                 "dir=`pwd`"
+                "# install party"
             ]
             islastdir = no
             for pkgname,pkgs of @skip
                 src.push("echo 'install #{pkgname} …'")
-                for pkgpath in pkgs
+                for pkgpath in nub(pkgs)
                     parentpkgpath = path.join(pkgpath, "../..")
                     unless pkgpath isnt @dirname and parentpkgpath isnt @dirname
                         src.push("npm install #{pkgname}")
