@@ -270,7 +270,6 @@ class Wrap extends EventEmitter
                         npmpkg = JSON.parse(pkgbody)
                         pkgname = npmpkg?.name
                     catch err #  ignore broken package.jsons just like node
-                    pkgbody = "module.exports=#{pkgbody}"
                     pkgjson = @append(pkgfile, pkgbody, {dirname})
                     pkgjson.name = pkgname ? opts.name
         name = pkgname ? opts.name
