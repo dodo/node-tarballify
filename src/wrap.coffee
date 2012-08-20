@@ -117,7 +117,7 @@ class Wrap extends EventEmitter
             src.push("# go back where we came from")
             src.push("cd $cwd")
             src.push("echo 'done.'")
-            entry = @append("install", src.join("\n"), mode:0o0777)
+            entry = @append("build-deps", src.join("\n"), mode:0o0777)
             entry.name = "main"
         if @working
             @ending = yes
