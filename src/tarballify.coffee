@@ -6,9 +6,10 @@ module.exports = (entryFile, opts = {}) ->
 
     if isArray entryFile
         if isArray opts.entry
-            opts.entry.apply(opts.entry, entryFile)
-        else if opts.entry
             opts.entry = entryFile.concat(opts.entry)
+        else if opts.entry
+            entryFile.push(opts.entry)
+            opts.entry = entryFile
         else
             opts.entry = entryFile
     else if typeof entryFile is 'object'
