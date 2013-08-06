@@ -6,7 +6,7 @@ module.exports = (entryFile, opts = {}) ->
 
     if isArray entryFile
         if isArray opts.entry
-            opts.entry = entryFile.concat(opts.entry)
+            opts.entry = opts.entry.concat(entryFile)
         else if opts.entry
             entryFile.push(opts.entry)
             opts.entry = entryFile
@@ -20,7 +20,7 @@ module.exports = (entryFile, opts = {}) ->
         else if opts.entry
             opts.entry = [ entryFile, opts.entry ]
         else
-            opts.entry = entryFile
+            opts.entry = [ entryFile ]
 
     res = wrap(opts)
-    res.once('pipe', -> res.addEntry(entryFile))
+    res.once('pipe', -> res.addEntry(entry) for entry in opts.entry ? [])
