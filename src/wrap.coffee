@@ -149,7 +149,7 @@ class Wrap extends EventEmitter
         else
             @work(job)
 
-    append: (file, content, opts = {}, callback) ->
+    append: (file, content, opts = {}) ->
         console.warn("WARN: no output specified.") unless @piped
         dirname = opts.dirname ? @dirname
         @files[file] = entry = {file}
@@ -202,7 +202,7 @@ class Wrap extends EventEmitter
                 body = res
         return {source, body}
 
-    addEntry: (filename, opts = {}, callback) ->
+    addEntry: (filename, opts = {}) ->
         dirname = opts.dirname ? @dirname
         file = path.resolve(dirname, filename)
         if opts.body?
