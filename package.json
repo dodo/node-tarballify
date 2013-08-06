@@ -11,7 +11,7 @@
     "prepublish": "cake build"}
 , "dependencies": {
     "tarball": ">= 0.0.3",
-    "bufferstream": ">= 0.5.1",
+    "bufferstream": ">= 0.6.0",
     "nub": ">= 0.0.0",
     "commondir": ">= 0.0.1",
     "resolve": "git://github.com/dodo/node-resolve.git#master",
