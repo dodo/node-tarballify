@@ -162,7 +162,7 @@ class Wrap extends EventEmitter
                 opts.size  = stats.size
                 opts.mode ?= parseInt(stats.mode.toString(8)[2 ..])
             else if typeof content is 'string'
-                opts.size = new Buffer(content).length
+                opts.size = new Buffer(content, opts.encoding ? 'utf-8').length
             @emit('error', "no size for #{file}") unless opts.size?
         stream.props = size:opts.size
         stream.props.mode = opts.mode if opts.mode?
