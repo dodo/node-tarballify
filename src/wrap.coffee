@@ -192,15 +192,24 @@ class Wrap extends EventEmitter
         return this
 
     readFile: (file) ->
+        source = undefined
         body = fs.readFileSync(file, 'utf-8')
         for fn in @filters
-            body = fn.call(this, body, file)
-        return body
+            res = fn.call(this, body, file)
+            if res?.source?
+                {source, body} = res
+            else
+                body = res
+        return {source, body}
 
     addEntry: (filename, opts = {}, callback) ->
         dirname = opts.dirname ? @dirname
         file = path.resolve(dirname, filename)
-        body = opts.body ? @readFile(file)
+        if opts.body?
+            {source, body} = opts
+        else
+            {source, body} = @readFile(file)
+        console.log "addEntry", opts.body?, typeof(source), typeof(body)
 
         try required = @detective.find(body)
         catch err
@@ -217,7 +226,7 @@ class Wrap extends EventEmitter
 
 
         dirname = path.dirname(file)
-        entry = @append(filename, body, {dirname})
+        entry = @append(filename, source ? body, {dirname})
         entry.target = opts.target if opts.target?
         entry.name = name = opts.name ? "main"
 
@@ -281,7 +290,10 @@ class Wrap extends EventEmitter
             @emit("skip", {file:opts.file, name, dirname:dir ? dirname})
             (@skip[name] ?= []).push(dir ? @dirname)
             return this
-        body = opts.body ? @readFile(opts.file)
+        if opts.body?
+            {source, body} = opts
+        else
+            {source, body} = @readFile(opts.file)
 
         try required = @detective.find(body)
         catch err
@@ -296,7 +308,7 @@ class Wrap extends EventEmitter
                 __filename:opts.file
             required.strings = required.strings.concat(exps)
 
-        entry = @append(opts.file, body, {dirname})
+        entry = @append(opts.file, source ? body, {dirname})
         entry.target = opts.target
         entry.name = name
 
