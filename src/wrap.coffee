@@ -181,7 +181,7 @@ class Wrap extends EventEmitter
         if typeof ext is 'object'
             fn = ext.wrapper
             ext = ext.extension
-        else if fn
+        if fn
             @extensions.push(ext)
             @filters.push (body, file) =>
                 if file.slice(-ext.length) is ext
