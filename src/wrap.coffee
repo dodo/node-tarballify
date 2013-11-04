@@ -160,7 +160,7 @@ class Wrap extends EventEmitter
             if path.existsSync(file)
                 stats = fs.statSync(file)
                 opts.size  = stats.size
-                opts.mode ?= parseInt(stats.mode.toString(8)[2 ..])
+                opts.mode ?= stats.mode & 0o0777
             else if typeof content is 'string'
                 opts.size = new Buffer(content, opts.encoding ? 'utf-8').length
             @emit('error', "no size for #{file}") unless opts.size?
