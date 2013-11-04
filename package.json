@@ -10,11 +10,11 @@
 , "scripts": {
     "prepublish": "cake build"}
 , "dependencies": {
-    "tarball": ">= 0.0.3",
+    "tarball": ">= 0.0.5",
     "bufferstream": ">= 0.6.0",
     "nub": ">= 0.0.0",
     "commondir": ">= 0.0.1",
-    "resolve": "git://github.com/dodo/node-resolve.git#master",
+    "resolve": ">= 0.2.6",
     "deputy": ">= 0.0.2",
     "detective": ">= 0.1.1"}
 , "devDependencies": {
