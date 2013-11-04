@@ -209,7 +209,6 @@ class Wrap extends EventEmitter
             {source, body} = opts
         else
             {source, body} = @readFile(file)
-        console.log "addEntry", opts.body?, typeof(source), typeof(body)
 
         try required = @detective.find(body)
         catch err
