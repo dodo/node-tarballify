@@ -62,13 +62,14 @@ class Wrap extends EventEmitter
 
         @working = no
         @dirname = opts.dirname ? process.cwd()
+        @file_list = opts.fileList
         @exports = opts.exports
         @debug = opts.debug
         @piped = no
 
         @skip = []
         @queue = []
-        @files = []
+        @files = {}
         @filters = []
 
         @extensions = [ '.js', '.node' ]
@@ -118,6 +119,14 @@ class Wrap extends EventEmitter
             src.push("cd $cwd")
             src.push("echo 'done.'")
             entry = @append("build-deps", src.join("\n"), mode:0o0777)
+            entry.name = "main"
+
+        if @file_list
+            @file_list = no
+            files = for filename,_ of @files
+                path.relative(@dirname, path.resolve(@dirname, filename))
+            files.push("FILES") # add this file itself
+            entry = @append("FILES", files.join("\n"), mode:0o0777)
             entry.name = "main"
         if @working
             @ending = yes

@@ -10,6 +10,7 @@ var tarballify = require('tarballify')
 console.log("creating new tarball …")
 var tarball = tarballify('./server.js', {
     dirname:__dirname,
+    fileList:false, // include a FILES file with a list of all files when true
 })
     .register(".node", function (body, file) {
         console.log("skip binary file:", file)
