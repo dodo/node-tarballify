@@ -56,7 +56,7 @@ class Wrap extends EventEmitter
                 gname:'nogroup'
                 uid: 1000
                 gid: 1000
-                mode: 0o0666
+                mode: 0o0644
         @tarball.on('error', @emit.bind(this, 'error'))
         @tarball.setMaxListeners(0)
 
@@ -126,7 +126,7 @@ class Wrap extends EventEmitter
             files = for filename,_ of @files
                 path.relative(@dirname, path.resolve(@dirname, filename))
             files.push("FILES") # add this file itself
-            entry = @append("FILES", files.join("\n"), mode:0o0777)
+            entry = @append("FILES", files.join("\n"), mode:0o0666)
             entry.name = "main"
         if @working
             @ending = yes
